@@ -101,8 +101,8 @@ function RestaurantsPage() {
       // Call the Google Places API to get the nearby restaurants
       const request = {
         location: { lat: latitude, lng: longitude },
-        radius: 500,
         type: ["restaurant"],
+        rankBy: google.maps.places.RankBy.DISTANCE,
       };
       const service = new window.google.maps.places.PlacesService(
         document.createElement("div")
@@ -115,7 +115,11 @@ function RestaurantsPage() {
           status: google.maps.places.PlacesServiceStatus
         ) => {
           if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-            dispatch({ type: "FETCH_RESTAURANTS_SUCCESS", payload: results });
+            const topTenResults = results.slice(0, 10); // get the top 10 results
+            dispatch({
+              type: "FETCH_RESTAURANTS_SUCCESS",
+              payload: topTenResults,
+            });
           } else {
             dispatch({
               type: "FETCH_RESTAURANTS_FAILURE",
@@ -143,7 +147,7 @@ function RestaurantsPage() {
   } else
     return (
       <div>
-        <h1>Nearby Restaurants</h1>
+        <h1>Top 10 Nearby Restaurants</h1>
         <div>
           <input
             type="text"

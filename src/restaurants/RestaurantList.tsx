@@ -53,7 +53,7 @@ function RestaurantList({
   currentPosition,
   searchQuery,
 }: RestaurantListProps) {
-  const [orderBy, setOrderBy] = useState("rating");
+  const [orderBy, setOrderBy] = useState("proximity");
 
   let filteredRestaurants = restaurants.filter(
     (restaurant) =>
