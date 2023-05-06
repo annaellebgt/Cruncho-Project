@@ -8,8 +8,7 @@ import RestaurantsPage from "./restaurants/RestaurantsPage";
 function App() {
   return (
     <div className="container">
-      <Greeter first="Sandrine" last="Quetier"></Greeter>
-      {/* <ProjectPage /> */}
+      {/* <Greeter first="Sandrine" last="Quetier"></Greeter> */}
       <RestaurantsPage />
     </div>
   );
