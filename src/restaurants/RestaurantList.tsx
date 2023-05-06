@@ -3,12 +3,20 @@ import RestaurantCard from "./RestaurantCard";
 interface RestaurantListProps {
   restaurants: google.maps.places.PlaceResult[];
   currentPosition: google.maps.LatLng | null;
+  searchQuery: string;
 }
 
-function RestaurantList({ restaurants, currentPosition }: RestaurantListProps) {
+function RestaurantList({
+  restaurants,
+  currentPosition,
+  searchQuery,
+}: RestaurantListProps) {
+  const filteredRestaurants = restaurants.filter((restaurant) =>
+    restaurant.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
   return (
     <div className="row">
-      {restaurants.map((restaurant) => (
+      {filteredRestaurants.map((restaurant) => (
         <div key={restaurant.name} className="cols-sm">
           <RestaurantCard
             restaurant={restaurant}

@@ -14,6 +14,7 @@ function RestaurantsPage() {
     restaurants: google.maps.places.PlaceResult[];
     loading: boolean;
     error: Error | null;
+    searchQuery: string;
   };
 
   type Action =
@@ -24,7 +25,8 @@ function RestaurantsPage() {
         type: "FETCH_RESTAURANTS_SUCCESS";
         payload: google.maps.places.PlaceResult[];
       }
-    | { type: "FETCH_RESTAURANTS_FAILURE"; payload: Error };
+    | { type: "FETCH_RESTAURANTS_FAILURE"; payload: Error }
+    | { type: "SEARCH_RESTAURANTS"; payload: string };
 
   const initialState: State = {
     currentPosition: null,
@@ -32,6 +34,7 @@ function RestaurantsPage() {
     restaurants: [],
     loading: false,
     error: null,
+    searchQuery: "",
   };
 
   function reducer(state: State, action: Action): State {
@@ -64,6 +67,11 @@ function RestaurantsPage() {
           ...state,
           loading: false,
           error: action.payload,
+        };
+      case "SEARCH_RESTAURANTS":
+        return {
+          ...state,
+          searchQuery: action.payload,
         };
       default:
         return state;
@@ -119,6 +127,13 @@ function RestaurantsPage() {
     });
   }, []);
 
+  function handleSearchTermChange(event: any) {
+    dispatch({
+      type: "SEARCH_RESTAURANTS",
+      payload: event.target.value,
+    });
+  }
+
   if (state.currentPositionLoading || state.loading) {
     return <div>Loading nearby restaurants...</div>;
   }
@@ -128,10 +143,19 @@ function RestaurantsPage() {
   } else
     return (
       <div>
-        <h1>Nearby Restaurants : state</h1>
+        <h1>Nearby Restaurants</h1>
+        <div>
+          <input
+            type="text"
+            placeholder="Search restaurants..."
+            value={state.searchQuery}
+            onChange={handleSearchTermChange}
+          />
+        </div>
         <RestaurantList
           restaurants={state.restaurants}
           currentPosition={state.currentPosition}
+          searchQuery={state.searchQuery}
         />
       </div>
     );
