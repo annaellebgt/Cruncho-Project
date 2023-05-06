@@ -101,7 +101,7 @@ function RestaurantsPage() {
       // Call the Google Places API to get the nearby restaurants
       const request = {
         location: { lat: latitude, lng: longitude },
-        radius: 100,
+        radius: 500,
         type: ["restaurant"],
       };
       const service = new window.google.maps.places.PlacesService(
