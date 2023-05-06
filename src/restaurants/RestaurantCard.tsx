@@ -1,5 +1,6 @@
 import React, { useEffect, useReducer, useState } from "react";
-import { Card, Badge } from "react-bootstrap";
+import { Card, Badge, Modal, Button } from "react-bootstrap";
+import RestaurantModal from "./RestaurantModal";
 
 interface restaurantCardProps {
   restaurant: google.maps.places.PlaceResult;
@@ -46,6 +47,7 @@ function RestaurantCard({ restaurant, currentPosition }: restaurantCardProps) {
   }
 
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (restaurant.geometry && currentPosition) {
@@ -72,45 +74,46 @@ function RestaurantCard({ restaurant, currentPosition }: restaurantCardProps) {
   }, [restaurant.geometry, currentPosition, restaurant.photos]);
 
   return (
-    <Card className="my-3">
-      <Card.Body>
-        <Card.Header>
-          <img
-            src={
-              state.urlPhoto || process.env.PUBLIC_URL + "/assets/default.png"
-            }
-            alt="Restaurant"
-            style={{ maxWidth: 350, maxHeight: 250 }}
-          />
-        </Card.Header>
-
-        <Card.Title>{restaurant.name}</Card.Title>
-
-        <Card.Text>Rating: {restaurant.rating}</Card.Text>
-        <Card.Text>Address : {restaurant.vicinity}</Card.Text>
-        <Card.Text>Distance: {state.distance}</Card.Text>
-
-        <Card.Text>
-          Icon : <img src={restaurant.icon} alt="..."></img>
-        </Card.Text>
-        <Card.Text>Url : {restaurant.url}</Card.Text>
-        <Card.Text>
-          User Rating Total : {restaurant.user_ratings_total}
-        </Card.Text>
-
-        {state.photoAttribution && (
-          <div dangerouslySetInnerHTML={{ __html: state.photoAttribution }} />
-        )}
-
-        <div>
-          {restaurant.types?.map((type, index) => (
-            <Badge key={index} bg="secondary" className="mx-1">
-              {type}
-            </Badge>
-          ))}
-        </div>
-      </Card.Body>
-    </Card>
+    <>
+      <Card style={{ cursor: "pointer" }} onClick={() => setShowModal(true)}>
+        <Card.Body>
+          <Card.Header>
+            <img
+              src={
+                state.urlPhoto || process.env.PUBLIC_URL + "/assets/default.png"
+              }
+              alt="Restaurant"
+              style={{ maxWidth: 350, maxHeight: 250 }}
+            />
+          </Card.Header>
+          <Card.Title>{restaurant.name}</Card.Title>
+          <Card.Text>
+            Rating: {restaurant.rating} ({restaurant.user_ratings_total})
+          </Card.Text>
+        </Card.Body>
+      </Card>
+      {showModal && (
+        <Modal show={showModal} onHide={() => setShowModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>{restaurant.name}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <RestaurantModal
+              restaurant={restaurant}
+              currentPosition={currentPosition}
+              distance={state.distance}
+              urlPhoto={state.urlPhoto}
+              photoAttribution={state.photoAttribution}
+            ></RestaurantModal>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowModal(false)}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
+    </>
   );
 }
 
