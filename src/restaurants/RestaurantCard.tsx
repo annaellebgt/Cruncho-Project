@@ -155,7 +155,6 @@ function RestaurantCard({ restaurant, currentPosition }: restaurantCardProps) {
           <Modal.Body>
             <RestaurantModal
               restaurant={restaurant}
-              currentPosition={currentPosition}
               distance={state.distance}
               urlPhoto={state.urlPhoto}
               photoAttribution={state.photoAttribution}

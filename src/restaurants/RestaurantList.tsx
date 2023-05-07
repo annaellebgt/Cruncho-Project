@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from "react";
+import React, { useReducer } from "react";
 import RestaurantCard from "./RestaurantCard";
 import { Col, Form, FormControl, InputGroup, Row } from "react-bootstrap";
 import { FaSearchLocation } from "react-icons/fa";
@@ -52,11 +52,15 @@ function sortRestaurants(
 function RestaurantList({ restaurants, currentPosition }: RestaurantListProps) {
   type State = {
     searchQuery: string;
+    orderBy: string;
   };
-  type Action = { type: "SEARCH_RESTAURANTS"; payload: string };
+  type Action =
+    | { type: "SEARCH_RESTAURANTS"; payload: string }
+    | { type: "ORDER_RESTAURANTS"; payload: string };
 
   const initialState: State = {
     searchQuery: "",
+    orderBy: "proximity",
   };
 
   function reducer(state: State, action: Action): State {
@@ -66,13 +70,16 @@ function RestaurantList({ restaurants, currentPosition }: RestaurantListProps) {
           ...state,
           searchQuery: action.payload,
         };
+      case "ORDER_RESTAURANTS":
+        return {
+          ...state,
+          orderBy: action.payload,
+        };
       default:
         return state;
     }
   }
   const [state, dispatch] = useReducer(reducer, initialState);
-
-  const [orderBy, setOrderBy] = useState("proximity");
 
   let filteredRestaurants = restaurants.filter(
     (restaurant) =>
@@ -86,7 +93,7 @@ function RestaurantList({ restaurants, currentPosition }: RestaurantListProps) {
   if (currentPosition) {
     filteredRestaurants = sortRestaurants(
       filteredRestaurants,
-      orderBy,
+      state.orderBy,
       currentPosition
     );
   }
@@ -96,6 +103,9 @@ function RestaurantList({ restaurants, currentPosition }: RestaurantListProps) {
       type: "SEARCH_RESTAURANTS",
       payload: event.target.value,
     });
+  }
+  function handleOrderByChange(event: any) {
+    dispatch({ type: "ORDER_RESTAURANTS", payload: event.target.value });
   }
 
   return (
@@ -127,8 +137,8 @@ function RestaurantList({ restaurants, currentPosition }: RestaurantListProps) {
           </label>
           <Form.Select
             id="orderBy"
-            value={orderBy}
-            onChange={(e) => setOrderBy(e.target.value)}
+            value={state.orderBy}
+            onChange={handleOrderByChange}
             style={{
               width: "10rem",
             }}

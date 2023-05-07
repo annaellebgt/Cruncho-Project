@@ -6,7 +6,6 @@ import { FcHome } from "react-icons/fc";
 
 interface restaurantModalProps {
   restaurant: google.maps.places.PlaceResult;
-  currentPosition: google.maps.LatLng | null;
   distance: number | null;
   urlPhoto: string;
   photoAttribution: string;
@@ -15,7 +14,6 @@ interface restaurantModalProps {
 
 function RestaurantModal({
   restaurant,
-  currentPosition,
   distance,
   urlPhoto,
   photoAttribution,

@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer } from "react";
 import RestaurantList from "./RestaurantList";
-import { Col, Container, FormControl, InputGroup, Row } from "react-bootstrap";
-import { FaSearchLocation } from "react-icons/fa";
+import { Container } from "react-bootstrap";
+import "./Restaurants.css";
 
 declare global {
   interface Window {
@@ -78,7 +78,6 @@ function RestaurantsPage() {
   useEffect(() => {
     dispatch({ type: "SET_CURRENT_POSITION_LOADING", payload: true });
 
-    // Get the user's current location
     navigator.geolocation.getCurrentPosition((position) => {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
@@ -93,7 +92,6 @@ function RestaurantsPage() {
         payload: currentPosition,
       });
 
-      // Call the Google Places API to get the nearby restaurants
       const request = {
         location: { lat: latitude, lng: longitude },
         type: ["restaurant"],
@@ -110,7 +108,7 @@ function RestaurantsPage() {
           status: google.maps.places.PlacesServiceStatus
         ) => {
           if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-            const topTenResults = results.slice(0, 10); // get the top 10 results
+            const topTenResults = results.slice(0, 10);
             dispatch({
               type: "FETCH_RESTAURANTS_SUCCESS",
               payload: topTenResults,
@@ -126,8 +124,16 @@ function RestaurantsPage() {
     });
   }, []);
 
-  if (state.currentPositionLoading || state.loading) {
-    return <div>Loading nearby restaurants...</div>;
+  if (state.loading) {
+    return <div className="my-3">Loading nearby restaurants...</div>;
+  }
+
+  if (state.currentPositionLoading) {
+    return (
+      <div className="my-3">
+        Your geolocation is needed to display the top 10 nearby restaurants
+      </div>
+    );
   }
 
   if (state.error) {
@@ -135,13 +141,7 @@ function RestaurantsPage() {
   } else
     return (
       <Container>
-        <h1
-          style={{ color: "#38648D", fontSize: "3rem", textAlign: "center" }}
-          className="my-3"
-        >
-          Top 10 Nearby Restaurants
-        </h1>
-
+        <h1 className="my-3 title-page">Top 10 Nearby Restaurants</h1>
         <RestaurantList
           restaurants={state.restaurants}
           currentPosition={state.currentPosition}
