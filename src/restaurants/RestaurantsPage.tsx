@@ -1,5 +1,7 @@
 import React, { useEffect, useReducer } from "react";
 import RestaurantList from "./RestaurantList";
+import { Col, Container, FormControl, InputGroup, Row } from "react-bootstrap";
+import { FaSearchLocation } from "react-icons/fa";
 
 declare global {
   interface Window {
@@ -14,7 +16,6 @@ function RestaurantsPage() {
     restaurants: google.maps.places.PlaceResult[];
     loading: boolean;
     error: Error | null;
-    searchQuery: string;
   };
 
   type Action =
@@ -25,8 +26,7 @@ function RestaurantsPage() {
         type: "FETCH_RESTAURANTS_SUCCESS";
         payload: google.maps.places.PlaceResult[];
       }
-    | { type: "FETCH_RESTAURANTS_FAILURE"; payload: Error }
-    | { type: "SEARCH_RESTAURANTS"; payload: string };
+    | { type: "FETCH_RESTAURANTS_FAILURE"; payload: Error };
 
   const initialState: State = {
     currentPosition: null,
@@ -34,7 +34,6 @@ function RestaurantsPage() {
     restaurants: [],
     loading: false,
     error: null,
-    searchQuery: "",
   };
 
   function reducer(state: State, action: Action): State {
@@ -68,11 +67,7 @@ function RestaurantsPage() {
           loading: false,
           error: action.payload,
         };
-      case "SEARCH_RESTAURANTS":
-        return {
-          ...state,
-          searchQuery: action.payload,
-        };
+
       default:
         return state;
     }
@@ -131,13 +126,6 @@ function RestaurantsPage() {
     });
   }, []);
 
-  function handleSearchTermChange(event: any) {
-    dispatch({
-      type: "SEARCH_RESTAURANTS",
-      payload: event.target.value,
-    });
-  }
-
   if (state.currentPositionLoading || state.loading) {
     return <div>Loading nearby restaurants...</div>;
   }
@@ -146,22 +134,19 @@ function RestaurantsPage() {
     return <div>{state.error.message}</div>;
   } else
     return (
-      <div>
-        <h1>Top 10 Nearby Restaurants</h1>
-        <div>
-          <input
-            type="text"
-            placeholder="Search restaurants..."
-            value={state.searchQuery}
-            onChange={handleSearchTermChange}
-          />
-        </div>
+      <Container>
+        <h1
+          style={{ color: "#38648D", fontSize: "3rem", textAlign: "center" }}
+          className="my-3"
+        >
+          Top 10 Nearby Restaurants
+        </h1>
+
         <RestaurantList
           restaurants={state.restaurants}
           currentPosition={state.currentPosition}
-          searchQuery={state.searchQuery}
         />
-      </div>
+      </Container>
     );
 }
 

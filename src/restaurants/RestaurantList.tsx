@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useReducer, useState } from "react";
 import RestaurantCard from "./RestaurantCard";
+import { Col, Form, FormControl, InputGroup, Row } from "react-bootstrap";
+import { FaSearchLocation } from "react-icons/fa";
 interface RestaurantListProps {
   restaurants: google.maps.places.PlaceResult[];
   currentPosition: google.maps.LatLng | null;
-  searchQuery: string;
 }
 
 function calculateDistance(
@@ -48,19 +49,37 @@ function sortRestaurants(
   });
 }
 
-function RestaurantList({
-  restaurants,
-  currentPosition,
-  searchQuery,
-}: RestaurantListProps) {
+function RestaurantList({ restaurants, currentPosition }: RestaurantListProps) {
+  type State = {
+    searchQuery: string;
+  };
+  type Action = { type: "SEARCH_RESTAURANTS"; payload: string };
+
+  const initialState: State = {
+    searchQuery: "",
+  };
+
+  function reducer(state: State, action: Action): State {
+    switch (action.type) {
+      case "SEARCH_RESTAURANTS":
+        return {
+          ...state,
+          searchQuery: action.payload,
+        };
+      default:
+        return state;
+    }
+  }
+  const [state, dispatch] = useReducer(reducer, initialState);
+
   const [orderBy, setOrderBy] = useState("proximity");
 
   let filteredRestaurants = restaurants.filter(
     (restaurant) =>
-      restaurant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      restaurant.name.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
       (restaurant.types &&
         restaurant.types.some((type) =>
-          type.toLowerCase().includes(searchQuery.toLowerCase())
+          type.toLowerCase().includes(state.searchQuery.toLowerCase())
         ))
   );
 
@@ -71,18 +90,57 @@ function RestaurantList({
       currentPosition
     );
   }
+
+  function handleSearchTermChange(event: any) {
+    dispatch({
+      type: "SEARCH_RESTAURANTS",
+      payload: event.target.value,
+    });
+  }
+
   return (
     <div>
-      <label htmlFor="orderBy">Order By:</label>
-      <select
-        id="orderBy"
-        value={orderBy}
-        onChange={(e) => setOrderBy(e.target.value)}
-      >
-        <option value="rating">Rating</option>
-        <option value="proximity">Proximity</option>
-        {/* add other options */}
-      </select>
+      <Row className="align-items-center mb-3">
+        <Col>
+          <InputGroup className="ms-2">
+            <div className="col d-flex align-items-center">
+              <FaSearchLocation
+                size={30}
+                style={{ color: "#38648D" }}
+                className="me-3"
+              ></FaSearchLocation>
+              <FormControl
+                placeholder="Search restaurants by name, type ..."
+                value={state.searchQuery}
+                onChange={handleSearchTermChange}
+              />
+            </div>
+          </InputGroup>
+        </Col>
+        <Col style={{ display: "flex", alignItems: "center" }}>
+          <label
+            htmlFor="orderBy"
+            style={{ color: "#38648D" }}
+            className="me-2"
+          >
+            <strong>Order By :</strong>
+          </label>
+          <Form.Select
+            id="orderBy"
+            value={orderBy}
+            onChange={(e) => setOrderBy(e.target.value)}
+            style={{
+              width: "10rem",
+            }}
+          >
+            <option value="rating" className="">
+              Rating
+            </option>
+            <option value="proximity">Proximity</option>
+          </Form.Select>
+        </Col>
+      </Row>
+
       <div className="row">
         {filteredRestaurants.map((restaurant) => (
           <div key={restaurant.name} className="col-sm-3 mb-3">

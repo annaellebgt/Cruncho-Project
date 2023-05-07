@@ -51,6 +51,10 @@ function RestaurantCard({ restaurant, currentPosition }: restaurantCardProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [showModal, setShowModal] = useState(false);
 
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
   useEffect(() => {
     if (restaurant.geometry && currentPosition) {
       const placeLocation = new window.google.maps.LatLng(
@@ -72,7 +76,7 @@ function RestaurantCard({ restaurant, currentPosition }: restaurantCardProps) {
       const urlphoto = photo.getUrl({ maxWidth: 250, maxHeight: 200 });
       const photoAttribution = photo.html_attributions[0].replace(
         />([^<]+)<\/a>/,
-        ">See more pictures</a>"
+        ">Get more information</a>"
       );
 
       dispatch({ type: "SET_URL_PHOTO", payload: urlphoto });
@@ -82,11 +86,14 @@ function RestaurantCard({ restaurant, currentPosition }: restaurantCardProps) {
 
   return (
     <>
-      <Card style={{ cursor: "pointer" }} onClick={() => setShowModal(true)}>
+      <Card
+        style={{ boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)", cursor: "pointer" }}
+        onClick={() => setShowModal(true)}
+      >
         <Card.Body>
           <Card.Header
             className="mx-auto"
-            style={{ width: 275, height: 225, position: "relative" }}
+            style={{ width: 260, height: 225, position: "relative" }}
           >
             <img
               src={
@@ -123,20 +130,19 @@ function RestaurantCard({ restaurant, currentPosition }: restaurantCardProps) {
               </span>
             </div>
           </Card.Title>
-          <Card.Text>
-            <div className="row">
-              <div className="col">
-                <StarRating
-                  rating={restaurant.rating}
-                  user_ratings_total={restaurant.user_ratings_total}
-                ></StarRating>
-              </div>
-              <div className="col justify-content-end d-flex align-items-center">
-                <FaWalking></FaWalking>
-                <span className="ms-2">{state.distance} m</span>
-              </div>
+
+          <div className="row">
+            <div className="col">
+              <StarRating
+                rating={restaurant.rating}
+                user_ratings_total={restaurant.user_ratings_total}
+              ></StarRating>
             </div>
-          </Card.Text>
+            <div className="col justify-content-end d-flex align-items-center">
+              <FaWalking></FaWalking>
+              <span className="ms-2">{state.distance} m</span>
+            </div>
+          </div>
         </Card.Body>
       </Card>
       {showModal && (
@@ -146,18 +152,6 @@ function RestaurantCard({ restaurant, currentPosition }: restaurantCardProps) {
           show={showModal}
           onHide={() => setShowModal(false)}
         >
-          <Modal.Header closeButton>
-            <Modal.Title>
-              <div className="d-flex align-items-center">
-                <img
-                  src={restaurant.icon}
-                  alt="..."
-                  style={{ width: 15, height: 20, position: "relative" }}
-                ></img>
-                <span className="ms-2">{restaurant.name}</span>
-              </div>
-            </Modal.Title>
-          </Modal.Header>
           <Modal.Body>
             <RestaurantModal
               restaurant={restaurant}
@@ -165,13 +159,9 @@ function RestaurantCard({ restaurant, currentPosition }: restaurantCardProps) {
               distance={state.distance}
               urlPhoto={state.urlPhoto}
               photoAttribution={state.photoAttribution}
+              handleCloseModal={handleCloseModal}
             ></RestaurantModal>
           </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowModal(false)}>
-              Close
-            </Button>
-          </Modal.Footer>
         </Modal>
       )}
     </>

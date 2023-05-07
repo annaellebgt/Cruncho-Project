@@ -1,6 +1,7 @@
 import React from "react";
 import { BsStarFill, BsStar, BsStarHalf } from "react-icons/bs";
 import "./Restaurants.css";
+import { Col, Row } from "react-bootstrap";
 
 interface StarRatingProps {
   rating: number | undefined;
@@ -20,15 +21,17 @@ function StarRating({ rating, user_ratings_total }: StarRatingProps) {
       <div className="d-flex align-items-center star">
         {[...new Array(totalStars)].map((arr, index) => {
           if (index < activeStars) {
-            return <BsStarFill />;
+            return <BsStarFill key={`star-${index}`} />;
           } else if (index === activeStars && halfStars === 1) {
-            return <BsStarHalf />;
+            return <BsStarHalf key={`star-${index}`} />;
           } else {
-            return <BsStar />;
+            return <BsStar key={`star-${index}`} />;
           }
         })}
       </div>
-      <div className="ms-2">({user_ratings_total})</div>
+      <div className="ms-2">
+        <small className="text-muted">({user_ratings_total})</small>
+      </div>
     </div>
   );
 }
