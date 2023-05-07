@@ -1,12 +1,13 @@
 import React from "react";
-// import "./App.css";
+
 import RestaurantsPage from "./restaurants/RestaurantsPage";
+import { Container } from "react-bootstrap";
 
 function App() {
   return (
-    <div className="container">
+    <Container>
       <RestaurantsPage />
-    </div>
+    </Container>
   );
 }
 
