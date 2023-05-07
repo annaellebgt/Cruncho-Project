@@ -7,3 +7,29 @@
 .star {
   color: gold;
 }
+
+.restaurant-card {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.restaurant-img-header {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.restaurant-title-card {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 250px;
+}
+
+.restaurant-img-modal {
+  height: 100%;
+  object-fit: cover;
+}

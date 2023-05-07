@@ -3,6 +3,7 @@ import { Card, Badge, Modal, Button } from "react-bootstrap";
 import RestaurantModal from "./RestaurantModal";
 import StarRating from "./StarRating";
 import { FaWalking } from "react-icons/fa";
+import "./Restaurants.css";
 
 interface restaurantCardProps {
   restaurant: google.maps.places.PlaceResult;
@@ -14,16 +15,19 @@ function RestaurantCard({ restaurant, currentPosition }: restaurantCardProps) {
     distance: number | null;
     urlPhoto: string;
     photoAttribution: string;
+    showModal: boolean;
   };
   type Action =
     | { type: "SET_DISTANCE"; payload: number }
     | { type: "SET_URL_PHOTO"; payload: string }
-    | { type: "SET_PHOTO_ATTRIBUTION"; payload: string };
+    | { type: "SET_PHOTO_ATTRIBUTION"; payload: string }
+    | { type: "SET_SHOW_MODAL"; payload: boolean };
 
   const initialState: State = {
     distance: null,
     urlPhoto: "",
     photoAttribution: "",
+    showModal: false,
   };
 
   function reducer(state: State, action: Action): State {
@@ -43,16 +47,24 @@ function RestaurantCard({ restaurant, currentPosition }: restaurantCardProps) {
           ...state,
           photoAttribution: action.payload,
         };
+      case "SET_SHOW_MODAL":
+        return {
+          ...state,
+          showModal: action.payload,
+        };
       default:
         return state;
     }
   }
 
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [showModal, setShowModal] = useState(false);
 
   const handleCloseModal = () => {
-    setShowModal(false);
+    dispatch({ type: "SET_SHOW_MODAL", payload: false });
+  };
+
+  const handleOpenModal = () => {
+    dispatch({ type: "SET_SHOW_MODAL", payload: true });
   };
 
   useEffect(() => {
@@ -86,10 +98,7 @@ function RestaurantCard({ restaurant, currentPosition }: restaurantCardProps) {
 
   return (
     <>
-      <Card
-        style={{ boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)", cursor: "pointer" }}
-        onClick={() => setShowModal(true)}
-      >
+      <Card className="restaurant-card" onClick={handleOpenModal}>
         <Card.Body>
           <Card.Header
             className="mx-auto"
@@ -100,14 +109,7 @@ function RestaurantCard({ restaurant, currentPosition }: restaurantCardProps) {
                 state.urlPhoto || process.env.PUBLIC_URL + "/assets/default.png"
               }
               alt="Restaurant"
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                position: "absolute",
-                top: 0,
-                left: 0,
-              }}
+              className="restaurant-img-header"
             />
           </Card.Header>
           <Card.Title className="mt-2">
@@ -117,15 +119,7 @@ function RestaurantCard({ restaurant, currentPosition }: restaurantCardProps) {
                 alt="..."
                 style={{ width: 15, height: 20, position: "relative" }}
               ></img>
-              <span
-                className="ms-2"
-                style={{
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  width: "250px",
-                }}
-              >
+              <span className="ms-2 restaurant-title-card">
                 {restaurant.name}
               </span>
             </div>
@@ -145,12 +139,12 @@ function RestaurantCard({ restaurant, currentPosition }: restaurantCardProps) {
           </div>
         </Card.Body>
       </Card>
-      {showModal && (
+      {state.showModal && (
         <Modal
           size="lg"
           centered
-          show={showModal}
-          onHide={() => setShowModal(false)}
+          show={state.showModal}
+          onHide={handleCloseModal}
         >
           <Modal.Body>
             <RestaurantModal
