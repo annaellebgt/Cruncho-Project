@@ -1,6 +1,8 @@
 import React, { useEffect, useReducer, useState } from "react";
 import { Card, Badge, Modal, Button } from "react-bootstrap";
 import RestaurantModal from "./RestaurantModal";
+import StarRating from "./StarRating";
+import { FaWalking } from "react-icons/fa";
 
 interface restaurantCardProps {
   restaurant: google.maps.places.PlaceResult;
@@ -56,18 +58,23 @@ function RestaurantCard({ restaurant, currentPosition }: restaurantCardProps) {
         restaurant.geometry.location.lng()
       );
 
-      const distance =
+      let distance =
         window.google.maps.geometry.spherical.computeDistanceBetween(
           currentPosition,
           placeLocation
         );
+      distance = Math.ceil(distance);
       dispatch({ type: "SET_DISTANCE", payload: distance });
     }
     let photo = null;
     if (restaurant.photos && restaurant.photos.length > 0) {
       photo = restaurant.photos[0];
-      const urlphoto = photo.getUrl({ maxWidth: 350, maxHeight: 250 });
-      const photoAttribution = photo.html_attributions[0];
+      const urlphoto = photo.getUrl({ maxWidth: 250, maxHeight: 200 });
+      const photoAttribution = photo.html_attributions[0].replace(
+        />([^<]+)<\/a>/,
+        ">See more pictures</a>"
+      );
+
       dispatch({ type: "SET_URL_PHOTO", payload: urlphoto });
       dispatch({ type: "SET_PHOTO_ATTRIBUTION", payload: photoAttribution });
     }
@@ -77,25 +84,79 @@ function RestaurantCard({ restaurant, currentPosition }: restaurantCardProps) {
     <>
       <Card style={{ cursor: "pointer" }} onClick={() => setShowModal(true)}>
         <Card.Body>
-          <Card.Header>
+          <Card.Header
+            className="mx-auto"
+            style={{ width: 275, height: 225, position: "relative" }}
+          >
             <img
               src={
                 state.urlPhoto || process.env.PUBLIC_URL + "/assets/default.png"
               }
               alt="Restaurant"
-              style={{ maxWidth: 350, maxHeight: 250 }}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                position: "absolute",
+                top: 0,
+                left: 0,
+              }}
             />
           </Card.Header>
-          <Card.Title>{restaurant.name}</Card.Title>
+          <Card.Title className="mt-2">
+            <div className="d-flex align-items-center">
+              <img
+                src={restaurant.icon}
+                alt="..."
+                style={{ width: 15, height: 20, position: "relative" }}
+              ></img>
+              <span
+                className="ms-2"
+                style={{
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  width: "250px",
+                }}
+              >
+                {restaurant.name}
+              </span>
+            </div>
+          </Card.Title>
           <Card.Text>
-            Rating: {restaurant.rating} ({restaurant.user_ratings_total})
+            <div className="row">
+              <div className="col">
+                <StarRating
+                  rating={restaurant.rating}
+                  user_ratings_total={restaurant.user_ratings_total}
+                ></StarRating>
+              </div>
+              <div className="col justify-content-end d-flex align-items-center">
+                <FaWalking></FaWalking>
+                <span className="ms-2">{state.distance} m</span>
+              </div>
+            </div>
           </Card.Text>
         </Card.Body>
       </Card>
       {showModal && (
-        <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal
+          size="lg"
+          centered
+          show={showModal}
+          onHide={() => setShowModal(false)}
+        >
           <Modal.Header closeButton>
-            <Modal.Title>{restaurant.name}</Modal.Title>
+            <Modal.Title>
+              <div className="d-flex align-items-center">
+                <img
+                  src={restaurant.icon}
+                  alt="..."
+                  style={{ width: 15, height: 20, position: "relative" }}
+                ></img>
+                <span className="ms-2">{restaurant.name}</span>
+              </div>
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <RestaurantModal

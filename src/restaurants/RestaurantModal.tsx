@@ -1,5 +1,7 @@
 import React from "react";
-import { Badge, Card } from "react-bootstrap";
+import { Badge, Card, Col, Row } from "react-bootstrap";
+import StarRating from "./StarRating";
+import { FaWalking } from "react-icons/fa";
 
 interface restaurantModalProps {
   restaurant: google.maps.places.PlaceResult;
@@ -16,42 +18,59 @@ function RestaurantModal({
   urlPhoto,
   photoAttribution,
 }: restaurantModalProps) {
+  console.log(photoAttribution);
   return (
-    <Card className="my-3">
-      <Card.Body>
-        <Card.Header>
-          <img
+    <Card style={{ maxWidth: "800px", border: 0 }}>
+      <Row className="g-0">
+        <Col md={4}>
+          <Card.Img
+            variant="top"
             src={urlPhoto || process.env.PUBLIC_URL + "/assets/default.png"}
+            className="rounded-start"
             alt="Restaurant"
-            style={{ maxWidth: 350, maxHeight: 250 }}
+            style={{ height: "100%" }}
           />
-        </Card.Header>
-        <Card.Title>{restaurant.name}</Card.Title>
-
-        <Card.Text>Rating: {restaurant.rating}</Card.Text>
-        <Card.Text>Address : {restaurant.vicinity}</Card.Text>
-        <Card.Text>Distance: {distance}</Card.Text>
-
-        <Card.Text>
-          Icon : <img src={restaurant.icon} alt="..."></img>
-        </Card.Text>
-        <Card.Text>Url : {restaurant.url}</Card.Text>
-        <Card.Text>
-          User Rating Total : {restaurant.user_ratings_total}
-        </Card.Text>
-
-        {photoAttribution && (
-          <div dangerouslySetInnerHTML={{ __html: photoAttribution }} />
-        )}
-
-        <div>
-          {restaurant.types?.map((type, index) => (
-            <Badge key={index} bg="secondary" className="mx-1">
-              {type}
-            </Badge>
-          ))}
-        </div>
-      </Card.Body>
+        </Col>
+        <Col md={8}>
+          <Card.Body>
+            <Card.Title>
+              <div className="d-flex align-items-center">
+                <img
+                  src={restaurant.icon}
+                  alt="..."
+                  style={{ width: 15, height: 20, position: "relative" }}
+                ></img>
+                <span className="ms-2">{restaurant.name}</span>
+              </div>
+            </Card.Title>
+            <Card.Text>
+              <div className="row">
+                <div className="col">
+                  <StarRating
+                    rating={restaurant.rating}
+                    user_ratings_total={restaurant.user_ratings_total}
+                  ></StarRating>
+                </div>
+                <div className="col justify-content-end d-flex align-items-center">
+                  <FaWalking></FaWalking>
+                  <span className="ms-2">{distance} m</span>
+                </div>
+              </div>
+              <div className="my-3">{restaurant.vicinity}</div>
+              {photoAttribution && (
+                <div dangerouslySetInnerHTML={{ __html: photoAttribution }} />
+              )}
+              <div className="mt-2">
+                {restaurant.types?.map((type, index) => (
+                  <Badge key={index} bg="secondary" className="mx-1">
+                    {type}
+                  </Badge>
+                ))}
+              </div>
+            </Card.Text>
+          </Card.Body>
+        </Col>
+      </Row>
     </Card>
   );
 }

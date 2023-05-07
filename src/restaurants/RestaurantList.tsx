@@ -85,7 +85,7 @@ function RestaurantList({
       </select>
       <div className="row">
         {filteredRestaurants.map((restaurant) => (
-          <div key={restaurant.name} className="col-sm-4 mb-3">
+          <div key={restaurant.name} className="col-sm-3 mb-3">
             <RestaurantCard
               restaurant={restaurant}
               currentPosition={currentPosition}
