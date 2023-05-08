@@ -1,5 +1,4 @@
 import React from "react";
-
 import RestaurantsPage from "./restaurants/RestaurantsPage";
 import { Container } from "react-bootstrap";
 

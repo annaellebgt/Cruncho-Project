@@ -1,5 +1,5 @@
-import React, { useEffect, useReducer, useState } from "react";
-import { Card, Badge, Modal, Button } from "react-bootstrap";
+import React, { useEffect, useReducer } from "react";
+import { Card, Modal } from "react-bootstrap";
 import RestaurantModal from "./RestaurantModal";
 import StarRating from "./StarRating";
 import { FaWalking } from "react-icons/fa";
@@ -59,12 +59,8 @@ function RestaurantCard({ restaurant, currentPosition }: restaurantCardProps) {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const handleCloseModal = () => {
-    dispatch({ type: "SET_SHOW_MODAL", payload: false });
-  };
-
-  const handleOpenModal = () => {
-    dispatch({ type: "SET_SHOW_MODAL", payload: true });
+  const handleModal = (open: boolean) => {
+    dispatch({ type: "SET_SHOW_MODAL", payload: open });
   };
 
   useEffect(() => {
@@ -98,7 +94,7 @@ function RestaurantCard({ restaurant, currentPosition }: restaurantCardProps) {
 
   return (
     <>
-      <Card className="restaurant-card" onClick={handleOpenModal}>
+      <Card className="restaurant-card" onClick={() => handleModal(true)}>
         <Card.Body>
           <Card.Header
             className="mx-auto"
@@ -144,7 +140,7 @@ function RestaurantCard({ restaurant, currentPosition }: restaurantCardProps) {
           size="lg"
           centered
           show={state.showModal}
-          onHide={handleCloseModal}
+          onHide={() => handleModal(false)}
         >
           <Modal.Body>
             <RestaurantModal
@@ -152,7 +148,7 @@ function RestaurantCard({ restaurant, currentPosition }: restaurantCardProps) {
               distance={state.distance}
               urlPhoto={state.urlPhoto}
               photoAttribution={state.photoAttribution}
-              handleCloseModal={handleCloseModal}
+              handleCloseModal={() => handleModal(false)}
             ></RestaurantModal>
           </Modal.Body>
         </Modal>

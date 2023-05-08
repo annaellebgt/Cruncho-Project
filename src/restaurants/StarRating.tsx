@@ -1,7 +1,6 @@
 import React from "react";
 import { BsStarFill, BsStar, BsStarHalf } from "react-icons/bs";
 import "./Restaurants.css";
-import { Col, Row } from "react-bootstrap";
 
 interface StarRatingProps {
   rating: number | undefined;
